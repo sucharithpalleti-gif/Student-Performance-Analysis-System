@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Student performance management and analytics API
 servers:
   - url: /api
     description: Base API path
 tags:
+  - name: students
+    description: Student profiles
+  - name: subjects
+    description: Subject catalog
+  - name: marks
+    description: Student assessments
+  - name: analytics
+    description: Performance summaries
   - name: health
-    description: Health operations
+    description: Service health
 paths:
   /healthz:
     get:
@@ -24,6 +32,241 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /students:
+    get:
+      operationId: listStudents
+      tags: [students]
+      summary: List students
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: grade
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Student list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Student" }
+    post:
+      operationId: createStudent
+      tags: [students]
+      summary: Create a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StudentInput" }
+      responses:
+        "201":
+          description: Student created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+        "400": { description: Invalid student data }
+        "409": { description: Roll number already exists }
+  /students/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+    get:
+      operationId: getStudent
+      tags: [students]
+      summary: Get a student
+      responses:
+        "200":
+          description: Student
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+        "404": { description: Student not found }
+    patch:
+      operationId: updateStudent
+      tags: [students]
+      summary: Update a student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StudentUpdate" }
+      responses:
+        "200":
+          description: Student updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Student" }
+        "400": { description: Invalid student data }
+        "404": { description: Student not found }
+        "409": { description: Roll number already exists }
+    delete:
+      operationId: deleteStudent
+      tags: [students]
+      summary: Delete a student
+      responses:
+        "204": { description: Student deleted }
+        "404": { description: Student not found }
+  /subjects:
+    get:
+      operationId: listSubjects
+      tags: [subjects]
+      summary: List subjects
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Subject list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Subject" }
+    post:
+      operationId: createSubject
+      tags: [subjects]
+      summary: Create a subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SubjectInput" }
+      responses:
+        "201":
+          description: Subject created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Subject" }
+        "400": { description: Invalid subject data }
+        "409": { description: Subject code already exists }
+  /subjects/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+    get:
+      operationId: getSubject
+      tags: [subjects]
+      summary: Get a subject
+      responses:
+        "200":
+          description: Subject
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Subject" }
+        "404": { description: Subject not found }
+    patch:
+      operationId: updateSubject
+      tags: [subjects]
+      summary: Update a subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SubjectUpdate" }
+      responses:
+        "200":
+          description: Subject updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Subject" }
+        "400": { description: Invalid subject data }
+        "404": { description: Subject not found }
+        "409": { description: Subject code already exists }
+    delete:
+      operationId: deleteSubject
+      tags: [subjects]
+      summary: Delete a subject
+      responses:
+        "204": { description: Subject deleted }
+        "404": { description: Subject not found }
+  /marks:
+    get:
+      operationId: listMarks
+      tags: [marks]
+      summary: List marks
+      parameters:
+        - name: studentId
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: subjectId
+          in: query
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Mark list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Mark" }
+    post:
+      operationId: createMark
+      tags: [marks]
+      summary: Enter marks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarkInput" }
+      responses:
+        "201":
+          description: Mark entered
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Mark" }
+        "400": { description: Invalid mark data }
+        "404": { description: Student or subject not found }
+        "409": { description: Assessment already exists for student and subject }
+  /marks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+    patch:
+      operationId: updateMark
+      tags: [marks]
+      summary: Update marks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarkUpdate" }
+      responses:
+        "200":
+          description: Mark updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Mark" }
+        "400": { description: Invalid mark data }
+        "404": { description: Mark not found }
+        "409": { description: Assessment already exists for student and subject }
+    delete:
+      operationId: deleteMark
+      tags: [marks]
+      summary: Delete marks
+      responses:
+        "204": { description: Mark deleted }
+        "404": { description: Mark not found }
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get performance summary
+      responses:
+        "200":
+          description: Dashboard summary with subject averages
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyticsSummary" }
 components:
   schemas:
     HealthStatus:
@@ -33,4 +276,118 @@ components:
           type: string
       required:
         - status
+    Student:
+      type: object
+      properties:
+        id: { type: integer }
+        rollNumber: { type: string }
+        fullName: { type: string }
+        grade: { type: string }
+        section: { type: string }
+        email: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+      required: [id, rollNumber, fullName, grade, section, email, createdAt]
+    StudentInput:
+      type: object
+      properties:
+        rollNumber: { type: string, minLength: 1, maxLength: 30 }
+        fullName: { type: string, minLength: 1, maxLength: 120 }
+        grade: { type: string, minLength: 1, maxLength: 30 }
+        section: { type: string, minLength: 1, maxLength: 30 }
+        email: { type: ["string", "null"], format: email }
+      required: [rollNumber, fullName, grade, section]
+    StudentUpdate:
+      type: object
+      properties:
+        rollNumber: { type: string, minLength: 1, maxLength: 30 }
+        fullName: { type: string, minLength: 1, maxLength: 120 }
+        grade: { type: string, minLength: 1, maxLength: 30 }
+        section: { type: string, minLength: 1, maxLength: 30 }
+        email: { type: ["string", "null"], format: email }
+      minProperties: 1
+    Subject:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        name: { type: string }
+        maxMarks: { type: integer }
+        passingMarks: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [id, code, name, maxMarks, passingMarks, createdAt]
+    SubjectInput:
+      type: object
+      properties:
+        code: { type: string, minLength: 1, maxLength: 30 }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        maxMarks: { type: integer, minimum: 1, maximum: 1000 }
+        passingMarks: { type: integer, minimum: 0, maximum: 1000 }
+      required: [code, name, maxMarks, passingMarks]
+    SubjectUpdate:
+      type: object
+      properties:
+        code: { type: string, minLength: 1, maxLength: 30 }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        maxMarks: { type: integer, minimum: 1, maximum: 1000 }
+        passingMarks: { type: integer, minimum: 0, maximum: 1000 }
+      minProperties: 1
+    Mark:
+      type: object
+      properties:
+        id: { type: integer }
+        studentId: { type: integer }
+        subjectId: { type: integer }
+        score: { type: number }
+        examName: { type: string }
+        term: { type: string }
+        assessmentDate: { type: string, format: date }
+        studentName: { type: string }
+        rollNumber: { type: string }
+        subjectName: { type: string }
+        maxMarks: { type: integer }
+        passingMarks: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [id, studentId, subjectId, score, examName, term, assessmentDate, studentName, rollNumber, subjectName, maxMarks, passingMarks, createdAt]
+    MarkInput:
+      type: object
+      properties:
+        studentId: { type: integer, minimum: 1 }
+        subjectId: { type: integer, minimum: 1 }
+        score: { type: number, minimum: 0 }
+        examName: { type: string, minLength: 1, maxLength: 100 }
+        term: { type: string, minLength: 1, maxLength: 60 }
+        assessmentDate: { type: string, format: date }
+      required: [studentId, subjectId, score, examName, term, assessmentDate]
+    MarkUpdate:
+      type: object
+      properties:
+        studentId: { type: integer, minimum: 1 }
+        subjectId: { type: integer, minimum: 1 }
+        score: { type: number, minimum: 0 }
+        examName: { type: string, minLength: 1, maxLength: 100 }
+        term: { type: string, minLength: 1, maxLength: 60 }
+        assessmentDate: { type: string, format: date }
+      minProperties: 1
+    SubjectAverage:
+      type: object
+      properties:
+        subjectId: { type: integer }
+        subjectName: { type: string }
+        average: { type: number }
+        averagePercentage: { type: number }
+        assessmentCount: { type: integer }
+      required: [subjectId, subjectName, average, averagePercentage, assessmentCount]
+    AnalyticsSummary:
+      type: object
+      properties:
+        studentCount: { type: integer }
+        subjectCount: { type: integer }
+        assessmentCount: { type: integer }
+        overallAverage: { type: number }
+        passRate: { type: number }
+        atRiskCount: { type: integer }
+        subjectAverages:
+          type: array
+          items: { $ref: "#/components/schemas/SubjectAverage" }
+      required: [studentCount, subjectCount, assessmentCount, overallAverage, passRate, atRiskCount, subjectAverages]
 
