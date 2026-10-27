@@ -1,0 +1,68 @@
+Design a complete Student Performance Analysis System with a Python Flask backend connected to MySQL. Implement modular routes for managing student profiles, subjects, and marks entry with validation. Create an analytics dashboard using Pandas and NumPy for summaries, and generate a subject-wise average bar chart using Matplotlib. Provide clean HTML and JavaScript, and style the frontend with a light, minimalist aesthetic using a color palette of soft white, beige, and slate grays./* Custom CSS and Tailwind overrides for minimalist beige & light theme */
+:root {
+    --bg-main: #faf9f6;
+    --text-main: #4a453d;
+    --brand-primary: #8c7d6b;
+    --brand-dark: #736453;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.bg-brand-600 {
+    background-color: var(--brand-primary);
+}
+
+.hover\:bg-brand-700:hover {
+    background-color: var(--brand-dark);
+}
+
+.text-brand-600 {
+    color: var(--brand-primary);
+}
+
+.bg-brand-50 {
+    background-color: #f9f8f6;
+}
+
+.border-brand-500 {
+    border-color: var(--brand-primary);
+}
+
+.shadow-brand-500\/20 {
+    box-shadow: 0 4px 6px -1px rgba(140, 125, 107, 0.2);
+}// Interactive UI behavior scripts
+function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.toggle('hidden');
+    }
+}
+
+function filterTable() {
+    const input = document.getElementById('tableSearch');
+    if (!input) return;
+    
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('studentTable');
+    if (!table) return;
+    
+    const tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+        let tdRoll = tr[i].getElementsByTagName('td')[0];
+        let tdName = tr[i].getElementsByTagName('td')[1];
+        if (tdRoll || tdName) {
+            let rollValue = tdRoll.textContent || tdRoll.innerText;
+            let nameValue = tdName.textContent || tdName.innerText;
+            if (rollValue.toLowerCase().indexOf(filter) > -1 || nameValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}

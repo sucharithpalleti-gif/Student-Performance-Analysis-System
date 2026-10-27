@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Student Performance Analysis"
+description = "A student performance management and analytics app for maintaining student and subject records, entering validated marks, and exploring class and subject-level outcomes."
+version = "1.0.0"
+id = "artifacts/student-performance"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20358
+
+[services.development]
+run = "pnpm --filter @workspace/student-performance run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/student-performance", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/student-performance/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20358"
+BASE_PATH = "/"
